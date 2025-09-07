@@ -1,0 +1,148 @@
+
+---
+
+# NIS2 Technical Compliance Toolkit
+
+![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg) ![Python Version](https://img.shields.io/badge/python-3.7+-brightgreen.svg)
+
+A cross-platform Python script for auditing system configurations and gathering technical evidence to support compliance with the EU's NIS2 Directive.
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Key Features](#key-features)
+- [Why This Project?](#why-this-project)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Sample Report Output](#sample-report-output)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Introduction
+
+The EU's Network and Information Security (NIS2) Directive imposes stringent cybersecurity risk management measures on a wide range of organizations. Proving compliance requires not just policies and procedures, but also technical evidence that security controls are implemented and functioning correctly.
+
+This toolkit is an open-source script designed to help organizations automate the collection of this technical evidence directly from their endpoints (Windows and Linux servers). It performs a series of checks mapped to the security measures mentioned in **Article 21** of the NIS2 Directive and generates a structured JSON report.
+
+## Key Features
+
+- **Asset Management:** Gathers detailed system information and generates a Software Bill of Materials (SBOM).
+- **Security Auditing:** Checks critical security configurations, including:
+  - Open network ports and listening services.
+  - Host-based firewall status.
+  - Local password policy settings.
+- **Cross-Platform:** Runs on both **Windows** and major **Linux** distributions (Debian/Ubuntu & RHEL/CentOS families).
+- **Structured Reporting:** Outputs results in a machine-readable JSON format, perfect for ingestion into other systems or for a future dashboard.
+
+## Why This Project?
+
+While many tools focus on vulnerability scanning, this project aims to bridge the gap between technical system state and compliance requirements. By running this scanner, a system administrator or compliance officer can quickly:
+
+- **Baseline** the security posture of their servers.
+- **Identify** immediate configuration weaknesses.
+- **Generate artifacts** that serve as evidence for an internal or external audit.
+- **Automate** a tedious but necessary part of the compliance lifecycle.
+
+## Prerequisites
+
+- **Python 3.7+**
+- **pip** (Python's package installer)
+- Administrative/root privileges may be required for some checks to run successfully.
+
+## Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/nis2-compliance-toolkit.git
+    cd nis2-compliance-toolkit
+    ```
+
+2.  **Create a `requirements.txt` file** with the following content:
+    ```
+    psutil
+    ```
+
+3.  **Install the required Python packages:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+## Usage
+
+Run the scanner from your terminal. It will print status updates to the console and generate a report file in the same directory.
+
+```bash
+python nis2_scanner.py
+```
+
+The script will produce a JSON file with a name in the format `nis2_report_<hostname>_<timestamp>.json`.
+
+## Sample Report Output
+
+The generated JSON report is structured to be easily parsable and is mapped directly to NIS2 concepts.
+
+```json
+{
+    "scan_metadata": {
+        "scan_time_utc": "2025-09-08T10:30:00.123456",
+        "scanner_version": "0.2.0"
+    },
+    "nis2_compliance_checks": {
+        "article_21_asset_management": {
+            "title": "Asset and Software Inventory (SBOM)",
+            "status": "COMPLETED",
+            "data": {
+                "system_info": {
+                    "os_type": "Windows",
+                    "os_release": "10",
+                    "hostname": "CORP-SERVER-01"
+                },
+                "installed_software_sbom": [
+                    { "name": "Microsoft Visual C++ 2015-2022 Redistributable (x64)", "version": "14.34.31938.0" },
+                    { "name": "7-Zip 22.01 (x64)", "version": "22.01" }
+                ]
+            }
+        },
+        "article_21_system_security": {
+            "title": "Basic System Security & Hygiene",
+            "status": "COMPLETED",
+            "data": {
+                "listening_ports": [
+                    { "port": 135, "address": "0.0.0.0", "protocol": "TCP", "process_name": "svchost.exe" }
+                ],
+                "firewall_status": {
+                    "status": "Active",
+                    "firewall": "Windows Defender Firewall"
+                },
+                "password_policies": {
+                    "min_password_length": "8",
+                    "max_password_age_days": "42",
+                    "lockout_threshold": "5"
+                }
+            }
+        }
+    }
+}
+```
+
+## Roadmap
+
+This project is in active development. Our future plans include:
+
+-   [ ] **Vulnerability Scanning:** Integrate the generated SBOM with an open-source vulnerability scanner (e.g., Google's OSV-Scanner, Trivy) to check for known CVEs.
+-   [ ] **Expanded Configuration Checks:** Add more security checks, such as:
+    -   User and privilege analysis (e.g., find accounts with non-expiring passwords).
+    -   Audit logging and service configuration checks.
+-   [ ] **Web Dashboard:** Develop a simple web application (Flask/FastAPI) to ingest JSON reports and provide a centralized view of compliance across multiple systems.
+-   [ ] **Enhanced Reporting:** Add options to export reports in human-readable formats like HTML or PDF.
+-   [ ] **Agent-Server Model:** Refactor the script into a lightweight agent that can be configured to report to a central server automatically.
+
+## Contributing
+
+Contributions are welcome! Whether it's bug reports, feature suggestions, or pull requests, your input is valued. Please feel free to open an issue to discuss your ideas.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
